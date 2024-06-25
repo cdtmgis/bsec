@@ -2,6 +2,9 @@
 function togglePasswordVisibility() {
     var passwordField = document.getElementById('password');
     var toggleBtn = document.getElementById('toggle-password');
+    var passwordFieldType = passwordField.type === "password" ? "text" : "password";
+    passwordField.type = passwordFieldType;
+    document.getElementById("toggle-password").innerHTML = passwordFieldType === "password" ? "Show" : "Hide";
 
     if (passwordField.type === 'password') {
         passwordField.type = 'text';
