@@ -93,6 +93,4 @@ button:hover {
     cursor: pointer;
     color: #007BFF;
 }
-#toggle-password:focus {
-    outline: none;
-}
+
