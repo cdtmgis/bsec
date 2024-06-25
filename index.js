@@ -4,15 +4,7 @@ function togglePasswordVisibility() {
     var toggleBtn = document.getElementById('toggle-password');
     var passwordFieldType = passwordField.type === "password" ? "text" : "password";
     passwordField.type = passwordFieldType;
-    document.getElementById("toggle-password").innerHTML = passwordFieldType === "password" ? "Show" : "Hide";
-
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        toggleBtn.textContent = 'Hide';
-    } else {
-        passwordField.type = 'password';
-        toggleBtn.textContent = 'Show';
-    }
+    toggleBtn.textContent = passwordFieldType === "password" ? "Show" : "Hide";
 }
 
 // Array of users
