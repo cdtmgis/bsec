@@ -1061,6 +1061,27 @@
             logo.style.display = 'block';
             logo.style.margin = '20px auto'; // Center the logo and add some margin
             document.getElementById("menu").appendChild(logo);
+
+	    // Add buttons below the logo
+            var buttonContainer = document.createElement('div');
+            buttonContainer.className = 'button-container';
+            
+            var refreshButton = document.createElement('button');
+            refreshButton.innerHTML = 'Refresh';
+            refreshButton.onclick = function() {
+                location.reload();
+            };
+            buttonContainer.appendChild(refreshButton);
+            
+            var logoutButton = document.createElement('button');
+            logoutButton.innerHTML = 'Logout';
+            logoutButton.onclick = function() {
+                window.location.href = 'index.html'; 
+            };
+            buttonContainer.appendChild(logoutButton);
+            
+            document.getElementById("menu").appendChild(buttonContainer);
+		
         </script>
     </body>
 </html>
