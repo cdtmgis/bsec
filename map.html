@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+        <!-- Favicons -->
+        <link href="assets/img/favicon.png" rel="icon">
+        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com" rel="preconnect">
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+        <!-- Vendor CSS Files -->
+        <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+        <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+        <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+        <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/MarkerCluster.css">
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+
+        
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        .leaflet-control-layers {
+        position: fixed !important;
+        bottom: 20px; /* Adjust as needed */
+        left: 20px; /* Adjust as needed */
+        z-index: 1000; /* Ensure it appears above other elements */
+}
+
+        /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
+        :root { 
+        --background-color: #ffffff; /* Background color for the entire website, including individual sections */
+        --default-color: #272829; /* Default color used for the majority of the text content across the entire website */
+        --heading-color: #45505b; /* Color for headings, subheadings and title throughout the website */
+        --accent-color: #0563bb; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+        --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
+        --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+        }
+
+            /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
+            :root {
+            --nav-color: #45505b;  /* The default color of the main navmenu links */
+            --nav-hover-color: #0563bb; /* Applied to main navmenu links when they are hovered over or active */
+            --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
+            --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+            --nav-dropdown-color: #212529; /* Used for navigation links of the dropdown items in the navigation menu. */
+            --nav-dropdown-hover-color: #0563bb; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+            }
+
+            /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
+
+            .light-background {
+            --background-color: #f9f9f9;
+            --surface-color: #ffffff;
+            }
+
+            .dark-background {
+            --background-color: #060606;
+            --default-color: #ffffff;
+            --heading-color: #ffffff;
+            --surface-color: #252525;
+            --contrast-color: #ffffff;
+            }
+
+            /* Smooth scroll */
+            :root {
+            scroll-behavior: smooth;
+            }
+
+                    /* Fonts */
+            :root {
+            --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            --heading-font: "Raleway",  sans-serif;
+            --nav-font: "Poppins",  sans-serif;
+            }
+                    .header {
+            color: var(--default-color);
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            padding: 15px;
+            transition: all ease-in-out 0.3s;
+            overflow-y: auto;
+            z-index: 997;
+            min-height: 100px;
+            }
+            @media (max-width: 1199px) {
+            .header {
+                background-color: var(--background-color);
+                border-right: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+                width: 300px;
+                left: -100%;
+            }
+            }
+
+            @media (min-width: 1200px) and (max-width: 1600px) {
+            .header~main {
+                margin-left: 160px;
+            }
+
+            .header~main .hero {
+                margin-left: -160px;
+                width: 100vw;
+            }
+            }
+
+            .header.header-show {
+            right: 0;
+            }
+
+            .header .header-toggle {
+            color: var(--contrast-color);
+            background-color: var(--accent-color);
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 9999;
+            transition: background-color 0.3s;
+            }
+
+            .header .header-toggle:hover {
+            color: var(--contrast-color);
+            background-color: color-mix(in srgb, var(--accent-color) 90%, white 15%);
+            }
+
+            /*--------------------------------------------------------------
+            # Navigation Menu
+            --------------------------------------------------------------*/
+            .navmenu {
+            padding: 0;
+            z-index: 9997;
+            }
+
+            .navmenu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            width: 140px;
+            }
+
+            .navmenu a,
+            .navmenu a:focus {
+            color: var(--nav-color);
+            font-family: var(--nav-font);
+            display: flex;
+            align-items: center;
+            padding: 10px 18px;
+            margin-bottom: 8px;
+            font-size: 15px;
+            border-radius: 50px;
+            background: color-mix(in srgb, var(--default-color), transparent 92%);
+            height: 56px;
+            width: 100%;
+            overflow: hidden;
+            transition: 0.3s;
+            }
+
+            .navmenu a i,
+            .navmenu a:focus i {
+            font-size: 20px;
+            }
+
+            .navmenu a span,
+            .navmenu a:focus span {
+            padding: 0 5px 0 7px;
+            }
+
+            @media (min-width: 992px) {
+
+            .navmenu a,
+            .navmenu a:focus {
+                max-width: 56px;
+            }
+
+            .navmenu a span,
+            .navmenu a:focus span {
+                display: none;
+            }
+            }
+
+            .navmenu a:hover,
+            .navmenu .active,
+            .navmenu .active:focus,
+            .navmenu li:hover>a {
+            color: var(--contrast-color);
+            background: var(--nav-hover-color);
+            }
+
+            .navmenu a:hover,
+            .navmenu li:hover>a {
+            max-width: 100%;
+            color: var(--contrast-color);
+            }
+
+            .navmenu a:hover span,
+            .navmenu li:hover>a span {
+            display: block;
+            }
+            @media screen and (max-width: 768px) {
+                [data-aos-delay] {
+                    transition-delay: 0 !important;
+                 }
+            }
+        </style>
+        <title>Bunia Sub-Office Security Services</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <header id="header" class="header d-flex flex-column justify-content-center">
+
+            <i class="header-toggle d-xl-none bi bi-list"></i>
+        
+            <nav id="navmenu" class="navmenu">
+              <ul>
+                <li><a href="index.html" class="active"><i class="bi bi-person navicon"></i><span>Log Out</span></a></li>                
+              </ul>
+            </nav>
+        
+          </header>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet.markercluster.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/Bunia_2.js"></script>
+        <script src="data/STF_CODE_2.js"></script>
+        <!-- Vendor JS Files -->
+        <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="assets/vendor/php-email-form/validate.js"></script>
+        <script src="assets/vendor/aos/aos.js"></script>
+        <script src="assets/vendor/typed.js/typed.umd.js"></script>
+        <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+        <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+        <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+        <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+        <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+        <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString' || e.target.feature.geometry.type === 'MultiLineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank"></a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Bunia SECURITY SERVICE</a> &middot; <a href="https://qgis.org"></a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        // L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        map.createPane('pane_EsriImagery_0');
+        map.getPane('pane_EsriImagery_0').style.zIndex = 400;
+        var layer_EsriImagery_0 = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_EsriImagery_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+        });
+        layer_EsriImagery_0;
+        map.createPane('pane_OSMStandard_1');
+        map.getPane('pane_OSMStandard_1').style.zIndex = 401;
+        var layer_OSMStandard_1 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OSMStandard_1',
+            opacity: 1.0,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© IOM - DRC - DTM - GIS</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OSMStandard_1;
+        map.addLayer(layer_OSMStandard_1);
+        function pop_Bunia_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">AS_</th>\
+                        <td>' + (feature.properties['AS_'] !== null ? autolinker.link(feature.properties['AS_'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ZS</th>\
+                        <td>' + (feature.properties['ZS'] !== null ? autolinker.link(feature.properties['ZS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_Bunia_2_0(feature) {
+            switch(String(feature.properties['AS_'])) {
+                case 'Soleniama':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(102,235,206,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Simbilyabo':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(179,57,209,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Rwankole':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(204,111,196,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Opas':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,82,177,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Nzere':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,42,235,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Nyakasanza':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(29,215,69,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Ngezi':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(153,221,36,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Ndibakodu':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(43,141,202,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Muhito':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(128,235,182,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Mudzi Maria':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(115,85,213,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Lembabo':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(189,203,37,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Kindia':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(218,186,56,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'CNCA Saio':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(46,216,34,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Central':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(104,227,238,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Bunia Cite':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(117,24,204,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Bora Uzima':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(217,70,30,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Bigo':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(215,171,124,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Bankoko':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(226,94,103,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Areo':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(216,51,109,0.213)',
+                interactive: true,
+            }
+                    break;
+                case 'Adventiste':
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(131,220,83,0.213)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_Bunia_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.213)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(115,148,213,0.213)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Bunia_2');
+        map.getPane('pane_Bunia_2').style.zIndex = 402;
+        map.getPane('pane_Bunia_2').style['mix-blend-mode'] = 'normal';
+        var layer_Bunia_2 = new L.geoJson(json_Bunia_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Bunia_2',
+            layerName: 'layer_Bunia_2',
+            pane: 'pane_Bunia_2',
+            onEachFeature: pop_Bunia_2,
+            style: style_Bunia_2_0,
+        });
+        bounds_group.addLayer(layer_Bunia_2);
+        function pop_STF_CODE_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">ID</th>\
+                        <td>' + (feature.properties['ID'] !== null ? autolinker.link(feature.properties['ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Reference</th>\
+                        <td>' + (feature.properties['Reference'] !== null ? autolinker.link(feature.properties['Reference'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Name</th>\
+                        <td>' + (feature.properties['Name'] !== null ? autolinker.link(feature.properties['Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Address</th>\
+                        <td>' + (feature.properties['Address'] !== null ? autolinker.link(feature.properties['Address'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Number</th>\
+                        <td>' + (feature.properties['Number'] !== null ? autolinker.link(feature.properties['Number'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Alt_Number</th>\
+                        <td>' + (feature.properties['Alt_Number'] !== null ? autolinker.link(feature.properties['Alt_Number'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_STF_CODE_2_0() {
+            return {
+                pane: 'pane_STF_CODE_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(196,60,57,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_STF_CODE_2');
+        map.getPane('pane_STF_CODE_2').style.zIndex = 403;
+        map.getPane('pane_STF_CODE_2').style['mix-blend-mode'] = 'normal';
+        var layer_STF_CODE_2 = new L.geoJson(json_STF_CODE_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_STF_CODE_2',
+            layerName: 'layer_STF_CODE_2',
+            pane: 'pane_STF_CODE_2',
+            onEachFeature: pop_STF_CODE_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_STF_CODE_2_0(feature));
+            },
+        });
+        var cluster_STF_CODE_2 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_STF_CODE_2.addLayer(layer_STF_CODE_2);
+
+        bounds_group.addLayer(layer_STF_CODE_2);
+        cluster_STF_CODE_2.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        var overlaysTree = [
+            {label: '<img src="legend/Code_STF_3.png" /> STF_CODE', layer: cluster_STF_CODE_2},
+            {label: 'Bunia<br /><table><tr><td style="text-align: center;"><img src="legend/Bunia_2_Soleniama0.png" /></td><td>Soleniama</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Simbilyabo1.png" /></td><td>Simbilyabo</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Rwankole2.png" /></td><td>Rwankole</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Opas3.png" /></td><td>Opas</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Nzere4.png" /></td><td>Nzere</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Nyakasanza5.png" /></td><td>Nyakasanza</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Ngezi6.png" /></td><td>Ngezi</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Ndibakodu7.png" /></td><td>Ndibakodu</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Muhito8.png" /></td><td>Muhito</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_MudziMaria9.png" /></td><td>Mudzi Maria</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Lembabo10.png" /></td><td>Lembabo</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Kindia11.png" /></td><td>Kindia</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_CNCASaio12.png" /></td><td>CNCA Saio</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Central13.png" /></td><td>Central</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_BuniaCite14.png" /></td><td>Bunia Cite</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_BoraUzima15.png" /></td><td>Bora Uzima</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Bigo16.png" /></td><td>Bigo</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Bankoko17.png" /></td><td>Bankoko</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Areo18.png" /></td><td>Areo</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_Adventiste19.png" /></td><td>Adventiste</td></tr><tr><td style="text-align: center;"><img src="legend/Bunia_2_20.png" /></td><td></td></tr></table>', layer: layer_Bunia_2},
+            {label: "OSM Standard", layer: layer_OSMStandard_1},
+            {label: "Esri Imagery", layer: layer_EsriImagery_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: cluster_STF_CODE_2,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'Name'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+         (function() {
+            "use strict";
+
+            /**
+             * Header toggle
+             */
+            const headerToggleBtn = document.querySelector('.header-toggle');
+
+            function headerToggle() {
+                document.querySelector('#header').classList.toggle('header-show');
+                headerToggleBtn.classList.toggle('bi-list');
+                headerToggleBtn.classList.toggle('bi-x');
+            }
+            headerToggleBtn.addEventListener('click', headerToggle);
+
+            /**
+             * Hide mobile nav on same-page/hash links
+             */
+            document.querySelectorAll('#navmenu a').forEach(navmenu => {
+                navmenu.addEventListener('click', () => {
+                if (document.querySelector('.header-show')) {
+                    headerToggle();
+                }
+                });
+
+            });
+
+            /**
+             * Toggle mobile nav dropdowns
+             */
+            document.querySelectorAll('.navmenu .toggle-dropdown').forEach(navmenu => {
+                navmenu.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentNode.classList.toggle('active');
+                this.parentNode.nextElementSibling.classList.toggle('dropdown-active');
+                e.stopImmediatePropagation();
+                });
+            });})
+        </script>
+    </body>
+</html>
